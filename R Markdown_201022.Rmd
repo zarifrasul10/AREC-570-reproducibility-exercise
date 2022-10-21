@@ -1,0 +1,60 @@
+---
+title: "Life Expectancy and GDP"
+author: "Zarif Rasul"
+date: "10/20/2022"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Canada
+
+Figure 1 plots life expectancy in Canada between 1952 and 1967
+
+```{r, echo=FALSE}
+rm(list=ls())
+options(scipen = 100)
+
+
+
+GDP_data <- read.csv("inputs/gdp_52-67.csv")
+LE_data <- read.csv("inputs/le_52-67.csv")
+
+
+
+total <- merge(GDP_data,LE_data,by=c("continent","country","year"))
+
+
+gdpPercap = total$gdp/total$pop
+
+total$gdpPercap <- gdpPercap
+
+
+
+plot(subset(total, country =="Canada",
+            select=c(year,lifeExp)), type = "l", main = "Figure 1: Life expectancy in Canada" )
+```
+
+Figure 2 shows GDP per capita over time for Canada. 
+
+```{r, echo = FALSE}
+plot(subset(total, country =="Canada",
+            select=c(year,gdpPercap)), type = "l", main = "Figure 2: Per Capita GDP in Canada" )
+
+```
+
+## Life Expectancy and GDP
+
+Now let's look at whether GDP per capita leads to higher life expectancy. 
+
+```{r, echo = FALSE}
+reg = lm(formula = total$lifeExp~total$gdpPercap)
+
+#summary(reg)
+summary(reg)
+```
+The coefficient on GDP per capita is statistically significant. 
